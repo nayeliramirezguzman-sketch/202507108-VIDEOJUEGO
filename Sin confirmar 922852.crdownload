@@ -1,0 +1,224 @@
+import random
+import json
+
+# =========================
+# LEGADO DE LOS GUARDIANES
+# =========================
+
+vida = 3
+nivel = 1
+xp = 0
+oro = 0
+
+inventario = {
+    "Armas": ["Espada"],
+    "Pociones": 2,
+    "Llaves": 0,
+    "Materiales": 0
+}
+
+niveles = {
+    1: "Bosque Ancestral",
+    2: "Cuevas Cristalinas",
+    3: "Tierras Volcánicas",
+    4: "Castillo de los Guardianes"
+}
+
+
+def guardar():
+    datos = {
+        "vida": vida,
+        "nivel": nivel,
+        "xp": xp,
+        "oro": oro,
+        "inventario": inventario
+    }
+
+    with open("guardado.json", "w") as archivo:
+        json.dump(datos, archivo)
+
+    print("✅ Partida guardada")
+
+
+def mostrar_inventario():
+    print("\n===== INVENTARIO =====")
+    for k, v in inventario.items():
+        print(f"{k}: {v}")
+    print("=======================")
+
+
+def combate():
+    global vida, xp, oro
+
+    enemigo = random.randint(3, 12)
+
+    print("\n⚔ COMBATE")
+    print("1. Espada")
+    print("2. Arco")
+    print("3. Hacha")
+    print("4. Magia Elemental")
+
+    opcion = input("Ataque: ")
+
+    if opcion == "1":
+        dano = random.randint(4, 10)
+
+    elif opcion == "2":
+        dano = random.randint(3, 12)
+
+    elif opcion == "3":
+        dano = random.randint(5, 14)
+
+    elif opcion == "4":
+        dano = random.randint(6, 15)
+
+    else:
+        dano = 0
+
+    print("Daño realizado:", dano)
+
+    if dano >= enemigo:
+        recompensa = random.randint(20, 50)
+
+        xp += recompensa
+        oro += 30
+
+        print("✅ Enemigo derrotado")
+        print("+", recompensa, "XP")
+        print("+30 Oro")
+
+        if random.randint(1, 3) == 1:
+            inventario["Materiales"] += 1
+
+        return True
+
+    else:
+        vida -= 1
+        print("❌ Has perdido una vida")
+        return False
+
+
+def mision_principal():
+    print("\n📜 MISION PRINCIPAL")
+    combate()
+
+
+def mision_secundaria():
+    global xp
+
+    print("\n📖 MISION SECUNDARIA")
+
+    if random.randint(1, 2) == 1:
+        recompensa = 20
+        xp += recompensa
+        print("✅ Misión completada")
+        print("+20 XP")
+    else:
+        print("❌ Misión fallida")
+
+
+def mision_diaria():
+    global oro
+
+    print("\n📅 MISION DIARIA")
+
+    recompensa = 50
+    oro += recompensa
+
+    print("✅ Completada")
+    print("+50 Oro")
+
+
+def jefe_final():
+    global vida
+
+    print("\n👹 JEFE DEL NIVEL")
+
+    fuerza_jefe = random.randint(10, 20)
+
+    print("El Señor Oscuro te desafía")
+
+    ataque = random.randint(8, 20)
+
+    if ataque >= fuerza_jefe:
+        print("🏆 Jefe derrotado")
+        return True
+
+    vida -= 1
+    print("💀 El jefe te derrotó")
+    return False
+
+
+# MENU PRINCIPAL
+
+print("================================")
+print(" LEGADO DE LOS GUARDIANES ")
+print("================================")
+
+while vida > 0 and nivel <= 4:
+
+    print("\n------ MENU ------")
+    print("1. Jugar")
+    print("2. Inventario")
+    print("3. Guardar")
+    print("4. Salir")
+
+    menu = input("Opción: ")
+
+    if menu == "2":
+        mostrar_inventario()
+        continue
+
+    elif menu == "3":
+        guardar()
+        continue
+
+    elif menu == "4":
+        break
+
+    print("\n🌎 Ubicación:", niveles[nivel])
+    print("\nTIPOS DE MISIONES")
+    print("1. Principal")
+    print("2. Secundaria")
+    print("3. Diaria")
+    print("4. Especial (Jefe)")
+
+    opcion = input("Selecciona: ")
+
+    if opcion == "1":
+        mision_principal()
+
+    elif opcion == "2":
+        mision_secundaria()
+
+    elif opcion == "3":
+        mision_diaria()
+
+    elif opcion == "4":
+
+        if jefe_final():
+            nivel += 1
+
+            inventario["Llaves"] += 1
+
+            print("🔑 Has obtenido una llave legendaria")
+
+            if nivel <= 4:
+                print("➡ Desbloqueaste el siguiente nivel")
+
+    if xp >= nivel * 100:
+        print("\n⭐ SUBISTE DE NIVEL")
+        xp = 0
+
+    print("\nVida:", vida)
+    print("Nivel:", nivel)
+    print("XP:", xp)
+    print("Oro:", oro)
+
+if nivel > 4:
+    print("\n🏆🏆🏆 VICTORIA 🏆🏆🏆")
+    print("Has restaurado el Legado de los Guardianes")
+    print("El reino ha sido salvado")
+
+elif vida <= 0:
+    print("\n💀 GAME OVER")
